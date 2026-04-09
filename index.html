@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aladdn Tech — Project Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f12;
+      --bg-2:#0f151a;
+      --card:#121a21;
+      --card-2:#0f171d;
+      --border:#1e2a33;
+      --text:#e7eef4;
+      --muted:#9bb1c1;
+      --accent:#00d4aa;
+      --accent-2:#00b894;
+      --warning:#f6c453;
+      --success:#4ade80;
+      --pending:#94a3b8;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:radial-gradient(1200px 800px at 10% -10%, #0b1a22 0%, var(--bg) 35%) no-repeat, var(--bg);
+      color:var(--text);
+    }
+    .container{max-width:1200px;margin:0 auto;padding:28px 20px 40px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      padding:18px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)
+    }
+    .title{
+      font-size:24px;font-weight:700;letter-spacing:.2px
+    }
+    .updated{
+      background:linear-gradient(135deg, rgba(0,212,170,.15), rgba(0,212,170,.05));
+      border:1px solid rgba(0,212,170,.35);
+      color:var(--accent);
+      padding:8px 12px;border-radius:999px;font-size:13px;font-weight:600
+    }
+    .summary{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px
+    }
+    .summary-card{
+      background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);
+      display:flex;flex-direction:column;gap:8px;transition:transform .25s ease, border-color .25s ease
+    }
+    .summary-card:hover{transform:translateY(-2px);border-color:#21424d}
+    .summary-card .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+    .summary-card .value{font-size:26px;font-weight:700}
+    .summary-card .sub{color:var(--muted);font-size:12px}
+
+    .projects{margin-top:22px;display:grid;gap:16px}
+    .project{
+      background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)
+    }
+    .project summary{
+      list-style:none;cursor:pointer;padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center
+    }
+    .project summary::-webkit-details-marker{display:none}
+    .project-header{
+      display:flex;flex-direction:column;gap:6px
+    }
+    .project-title{
+      font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px
+    }
+    .status-pill{
+      font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;border-radius:999px;border:1px solid var(--border)
+    }
+    .status-active{color:var(--accent);border-color:rgba(0,212,170,.4);background:rgba(0,212,170,.08)}
+    .status-paused{color:var(--warning);border-color:rgba(246,196,83,.4);background:rgba(246,196,83,.08)}
+    .status-completed{color:var(--success);border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08)}
+
+    .project-meta{color:var(--muted);font-size:13px}
+
+    .progress{
+      display:flex;align-items:center;gap:10px
+    }
+    .progress-bar{
+      width:180px;max-width:40vw;height:8px;background:#0b1217;border-radius:999px;overflow:hidden;border:1px solid var(--border)
+    }
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width .6s ease}
+    .progress-label{font-weight:600;font-size:12px;color:var(--muted)}
+
+    .project-body{
+      border-top:1px solid var(--border);padding:16px 18px;display:grid;gap:14px;background:var(--card-2)
+    }
+    .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+
+    .info-box{background:#0e151a;border:1px solid var(--border);padding:12px;border-radius:12px}
+    .info-box h4{margin:0 0 6px 0;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .info-box p{margin:0;font-size:14px}
+    .info-list{display:grid;gap:8px}
+
+    .agents, .tasks{display:grid;gap:10px}
+    .agent{
+      display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:#0c1419;border:1px solid var(--border)
+    }
+    .agent .name{font-weight:600}
+    .agent .role{color:var(--muted);font-size:12px}
+    .agent .state{margin-left:auto;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+
+    .task{
+      display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#0c1419;border:1px solid var(--border)
+    }
+    .task .title{font-weight:500}
+    .task .assignee{color:var(--muted);font-size:12px}
+    .status-dot{font-size:16px}
+    .badge{
+      font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;border-radius:999px;border:1px solid var(--border)
+    }
+    .badge.done{color:var(--success);border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08)}
+    .badge.in-progress{color:var(--accent);border-color:rgba(0,212,170,.4);background:rgba(0,212,170,.08)}
+    .badge.pending{color:var(--pending);border-color:rgba(148,163,184,.4);background:rgba(148,163,184,.08)}
+
+    footer{margin-top:26px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:640px){
+      .progress{flex-direction:column;align-items:flex-start}
+      .progress-bar{width:100%}
+      header{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const PROJECTS_DATA = {
+      lastUpdated: "2026-04-09T00:00:00-05:00",
+      projects: [
+        {
+          id: "clawmarket",
+          name: "ClawMarket",
+          description: "AI-powered services marketplace — USDT escrow on TRON",
+          status: "active",
+          progress: 85,
+          repo: "github.com/aladdntech/clawmarket",
+          live: "clawmarket.co | VPS: 45.76.60.153",
+          stack: "Node.js + Express + MongoDB Atlas + Redis + LangChain + TronWeb",
+          agents: [
+            { name: "Atlas", role: "CEO — strategic oversight, OKRs", status: "active", emoji: "🏛️" },
+            { name: "Hunter", role: "Sales — provider recruitment outreach", status: "active", emoji: "🎯" },
+            { name: "Vex", role: "CMO — marketing & creative", status: "done", emoji: "🎨" },
+            { name: "CTO Agent", role: "Frontend/UX — Nielsen heuristics", status: "active", emoji: "🧠" },
+            { name: "QA Agent", role: "Quality gate — risk-based testing", status: "active", emoji: "🕵️" },
+            { name: "Forge", role: "DevOps & infrastructure", status: "active", emoji: "⚙️" },
+            { name: "Ledger", role: "CFO — cost analysis", status: "active", emoji: "📊" },
+            { name: "Shield", role: "Security — anti-injection defense", status: "active", emoji: "🛡️" },
+            { name: "Nerd Agent", role: "Research — Pareto directives", status: "done", emoji: "🔬" }
+          ],
+          tasks: [
+            { title: "Platform live — 40 listings, 15 providers, auth + orders", status: "done", assignee: "Forge" },
+            { title: "USDT escrow with QR codes working", status: "done", assignee: "Forge" },
+            { title: "Order flow fixed — no agent profile requirement", status: "done", assignee: "Atlas" },
+            { title: "NoSQL injection sanitized", status: "done", assignee: "QA Agent" },
+            { title: "Sales kit — provider recruitment (OpenClaw/AI builders)", status: "done", assignee: "Hunter" },
+            { title: "Anti-injection security spec + Shield agent charter", status: "done", assignee: "Shield" },
+            { title: "Discord integration guide prepared", status: "done", assignee: "Jasmin" },
+            { title: "Provider recruitment battle plan complete", status: "done", assignee: "Hunter" },
+            { title: "Provider outreach — start posting to communities", status: "pending", assignee: "Hunter" },
+            { title: "First paying customer", status: "pending", assignee: "Hunter" }
+          ]
+        },
+        {
+          id: "slim-doctor",
+          name: "Slim Doctor Landing Page",
+          description: "Premium product LP for TV executives (Record network)",
+          status: "active",
+          progress: 90,
+          repo: "github.com/aladdntech/slim-doctor-preview",
+          live: "aladdntech.github.io/slim-doctor-preview",
+          agents: [
+            { name: "QA Agent", role: "Responsiveness & visual QA", status: "done", emoji: "🕵️" },
+            { name: "CTO Agent", role: "CSS/UX polish", status: "done", emoji: "🧠" }
+          ],
+          tasks: [
+            { title: "Pink variant — Israel's chosen design", status: "done", assignee: "CTO Agent" },
+            { title: "Gold variant — alternative kept", status: "done", assignee: "CTO Agent" },
+            { title: "QA fixes — CTA centering, price alignment, guarantee badge", status: "done", assignee: "QA Agent" },
+            { title: "Cart floating button + tooltip", status: "done", assignee: "CTO Agent" },
+            { title: "Testimonial SVG icons (no emojis)", status: "done", assignee: "CTO Agent" },
+            { title: "Real pricing from Israel (currently placeholder R$297→R$197)", status: "pending", assignee: "Israel" }
+          ]
+        },
+        {
+          id: "pocket-mkt",
+          name: "Pocket Marketing Agency",
+          description: "AI-powered social media management SaaS",
+          status: "paused",
+          progress: 65,
+          repo: "(private) ~/Coding/pocket/pocket-mkt",
+          live: "MVP ~99% backend, WhatsApp-first vision not started",
+          stack: "React + Node.js + TypeScript + MongoDB + Gemini AI",
+          agents: [],
+          tasks: [
+            { title: "Backend MVP (auth, posts, calendar, AI gen, media)", status: "done", assignee: "—" },
+            { title: "i18n EN + PT-BR (~770 keys)", status: "done", assignee: "—" },
+            { title: "WhatsApp onboarding flow", status: "pending", assignee: "—" },
+            { title: "Instagram publishing pipeline", status: "pending", assignee: "—" },
+            { title: "Agent team assignment (if Israel decides)", status: "pending", assignee: "Israel" }
+          ]
+        },
+        {
+          id: "alliance-tech-abroad",
+          name: "Alliance Tech Abroad",
+          description: "UK offshore company registration via Rapid Formations",
+          status: "paused",
+          progress: 35,
+          repo: "—",
+          live: "Research complete, awaiting execution",
+          stack: "",
+          agents: [
+            { name: "Atlas", role: "Founder — execution", status: "active", emoji: "🏛️" }
+          ],
+          tasks: [
+            { title: "Research — chose Rapid Formations (~£100)", status: "done", assignee: "Atlas" },
+            { title: "Register company", status: "pending", assignee: "Atlas" },
+            { title: "Set up business bank account", status: "pending", assignee: "Atlas" }
+          ]
+        },
+        {
+          id: "infra-ops",
+          name: "Infrastructure & Operations",
+          description: "OpenClaw gateway, self-healing, agent orchestration",
+          status: "active",
+          progress: 88,
+          repo: "—",
+          live: "Mac Mini M5 — 24/7 uptime, lydia-doctor self-healing",
+          agents: [
+            { name: "Jasmin 🌸", role: "Orchestrator — main agent", status: "active", emoji: "🌸" },
+            { name: "Lydia Doctor", role: "Self-healing watchdog (45s interval, 12 layers)", status: "active", emoji: "🩺" }
+          ],
+          tasks: [
+            { title: "Self-healing system (12 diagnostic layers)", status: "done", assignee: "Lydia" },
+            { title: "10-agent team with Pareto directives", status: "done", assignee: "Jasmin" },
+            { title: "WhatsApp connected (+5493412279715)", status: "done", assignee: "Ops" },
+            { title: "Discord account created (jasmin@aladdn.app)", status: "done", assignee: "Israel" },
+            { title: "Anti-injection security layer — spec + Shield agent", status: "done", assignee: "Jasmin" },
+            { title: "Discord bot integration — guide ready, needs token", status: "pending", assignee: "Israel" },
+            { title: "Mission Control auto-update cron (every 6h)", status: "done", assignee: "Jasmin" },
+            { title: "memory_search broken (OpenAI embeddings quota)", status: "in-progress", assignee: "Ops" }
+          ]
+        }
+      ]
+    };
+  </script>
+
+  <div class="container">
+    <header>
+      <div class="title">Aladdn Tech — Project Dashboard</div>
+      <div class="updated" id="lastUpdated">Last updated: —</div>
+    </header>
+
+    <section class="summary" id="summary"></section>
+
+    <section class="projects" id="projects"></section>
+
+    <footer>Managed by Jasmin 🌸 | Updated by AI agents</footer>
+  </div>
+
+  <script>
+    const statusToEmoji = {
+      "done": "✅",
+      "in-progress": "🔄",
+      "pending": "⏳"
+    };
+
+    function formatDate(iso){
+      const d = new Date(iso);
+      if (isNaN(d)) return iso;
+      return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function computeSummary(data){
+      const totalProjects = data.projects.length;
+      let activeTasks = 0;
+      let agentsRunning = 0;
+      let doneTasks = 0;
+      let totalTasks = 0;
+
+      data.projects.forEach(p => {
+        p.tasks.forEach(t => {
+          totalTasks++;
+          if (t.status === 'in-progress') activeTasks++;
+          if (t.status === 'done') doneTasks++;
+        });
+        p.agents.forEach(a => {
+          if (a.status === 'active' || a.status === 'in-progress') agentsRunning++;
+        });
+      });
+
+      const completion = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+      return { totalProjects, activeTasks, agentsRunning, completion };
+    }
+
+    function renderSummary(){
+      const summary = computeSummary(PROJECTS_DATA);
+      const el = document.getElementById('summary');
+      el.innerHTML = `
+        <div class="summary-card">
+          <div class="label">Total Projects</div>
+          <div class="value">${summary.totalProjects}</div>
+          <div class="sub">All active initiatives</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Active Tasks</div>
+          <div class="value">${summary.activeTasks}</div>
+          <div class="sub">Tasks in progress</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Agents Running</div>
+          <div class="value">${summary.agentsRunning}</div>
+          <div class="sub">Active or in-progress</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Completion</div>
+          <div class="value">${summary.completion}%</div>
+          <div class="sub">Across all tasks</div>
+        </div>
+      `;
+    }
+
+    function renderProjects(){
+      const wrap = document.getElementById('projects');
+      wrap.innerHTML = '';
+      PROJECTS_DATA.projects.forEach((p, idx) => {
+        const details = document.createElement('details');
+        details.className = 'project';
+        if (idx === 0) details.open = true;
+
+        const statusClass = `status-${p.status}`;
+        const progressBarId = `progress-${p.id}`;
+
+        details.innerHTML = `
+          <summary>
+            <div class="project-header">
+              <div class="project-title">
+                ${p.name}
+                <span class="status-pill ${statusClass}">${p.status}</span>
+              </div>
+              <div class="project-meta">${p.description}</div>
+            </div>
+            <div class="progress">
+              <div class="progress-bar"><div class="progress-fill" id="${progressBarId}"></div></div>
+              <div class="progress-label">${p.progress}%</div>
+            </div>
+          </summary>
+          <div class="project-body">
+            <div class="grid-2">
+              <div class="info-box">
+                <h4>Repo</h4>
+                <p>${p.repo || '—'}</p>
+              </div>
+              <div class="info-box">
+                <h4>Live / Status</h4>
+                <p>${p.live || p.status}</p>
+              </div>
+            </div>
+            ${p.stack ? `
+              <div class="info-box">
+                <h4>Stack</h4>
+                <p>${p.stack}</p>
+              </div>
+            ` : ''}
+            <div class="grid-2">
+              <div class="info-box">
+                <h4>Agents</h4>
+                <div class="agents">
+                  ${p.agents.map(a => `
+                    <div class="agent">
+                      <div>${a.emoji || '🤖'}</div>
+                      <div>
+                        <div class="name">${a.name}</div>
+                        <div class="role">${a.role}</div>
+                      </div>
+                      <div class="state">${a.status}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="info-box">
+                <h4>Tasks</h4>
+                <div class="tasks">
+                  ${p.tasks.map(t => `
+                    <div class="task">
+                      <div class="status-dot">${statusToEmoji[t.status] || '•'}</div>
+                      <div>
+                        <div class="title">${t.title}</div>
+                        ${t.assignee ? `<div class="assignee">${t.assignee}</div>` : ''}
+                      </div>
+                      <div class="badge ${t.status}">${t.status.replace('-', ' ')}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        wrap.appendChild(details);
+        requestAnimationFrame(() => {
+          const fill = document.getElementById(progressBarId);
+          if (fill) fill.style.width = `${p.progress}%`;
+        });
+      });
+    }
+
+    function init(){
+      document.getElementById('lastUpdated').textContent = `Last updated: ${formatDate(PROJECTS_DATA.lastUpdated)}`;
+      renderSummary();
+      renderProjects();
+    }
+
+    init();
+  </script>
+</body>
+</html>
